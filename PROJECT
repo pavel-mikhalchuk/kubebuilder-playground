@@ -1,0 +1,7 @@
+domain: mikhalchuk.k8s
+repo: github.com/pavel-mikhalchuk/kubebuilder-playground
+resources:
+- group: infra
+  kind: Environment
+  version: v1
+version: "2"

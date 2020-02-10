@@ -1,0 +1,7 @@
+apiVersion: infra.mikhalchuk.k8s/v1
+kind: Environment
+metadata:
+  name: environment-sample
+spec:
+  # Add fields here
+  foo: bar
