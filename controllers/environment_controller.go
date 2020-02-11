@@ -33,18 +33,32 @@ type EnvironmentReconciler struct {
 	Scheme *runtime.Scheme
 }
 
+// Reconcile func docs are WIP
 // +kubebuilder:rbac:groups=infra.mikhalchuk.k8s,resources=environments,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=infra.mikhalchuk.k8s,resources=environments/status,verbs=get;update;patch
-
 func (r *EnvironmentReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
-	_ = r.Log.WithValues("environment", req.NamespacedName)
+	ctx := context.Background()
+	log := r.Log.WithValues("environment", req.NamespacedName)
 
-	// your logic here
+	var env infrav1.Environment
+	if err := r.Get(ctx, req.NamespacedName, &env); err != nil {
+		log.Error(err, "unable to fetch Env")
+		// we'll ignore not-found errors, since they can't be fixed by an immediate
+		// requeue (we'll need to wait for a new notification), and we can get them
+		// on deleted requests.
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	env.Status.NfsProvisioned = true
+
+	if err := r.Status().Update(ctx, &env); err != nil {
+		log.Error(err, "Unable to update Environment status")
+	}
 
 	return ctrl.Result{}, nil
 }
 
+// SetupWithManager adds EnvironmentReconciler to the manager
 func (r *EnvironmentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&infrav1.Environment{}).

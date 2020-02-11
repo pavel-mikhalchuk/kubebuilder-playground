@@ -33,11 +33,11 @@ type EnvironmentSpec struct {
 
 // EnvironmentStatus defines the observed state of Environment
 type EnvironmentStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	NfsProvisioned bool `json:"nfsProvisioned,omitempty"`
 }
 
 // +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 // +kubebuilder:resource:scope=Cluster
 
 // Environment is the Schema for the environments API
